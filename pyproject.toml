@@ -1,0 +1,73 @@
+[project]
+name = "advance-rag"
+version = "0.1.0"
+description = "Scalable, multi-tenant enterprise knowledge infrastructure with RAG as its intelligence layer."
+readme = "README.md"
+authors = [
+    { name = "Afaq Ejaz", email = "afaqthejaz@gmail.com" }
+]
+requires-python = ">=3.14"
+dependencies = [
+    "alembic>=1.14",
+    "dramatiq[redis]>=1.17",
+    "fastapi>=0.115",
+    "psycopg[binary]>=3.2",
+    "pydantic>=2.10",
+    "pydantic-settings>=2.6",
+    "qdrant-client>=1.12",
+    "redis>=5.2",
+    "sqlalchemy>=2.0.36",
+    "structlog>=24.4",
+    "typer>=0.15",
+    "uvicorn[standard]>=0.32",
+]
+
+[project.scripts]
+advance-rag = "advance_rag.cli:app"
+
+[dependency-groups]
+dev = [
+    "httpx>=0.28",
+    "mypy>=1.13",
+    "pre-commit>=4.0",
+    "pytest>=8.3",
+    "pytest-asyncio>=0.24",
+    "ruff>=0.8",
+]
+
+[build-system]
+requires = ["uv_build>=0.12.0,<0.13.0"]
+build-backend = "uv_build"
+
+# --------------------------------------------------------------------------- ruff
+[tool.ruff]
+line-length = 100
+target-version = "py314"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "W", "F", "I", "B", "UP", "SIM", "ASYNC", "RUF", "N", "S", "PT"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S101"]
+
+# --------------------------------------------------------------------------- mypy
+[tool.mypy]
+python_version = "3.14"
+strict = true
+plugins = ["pydantic.mypy"]
+disallow_untyped_decorators = false
+
+[[tool.mypy.overrides]]
+module = ["dramatiq.*"]
+ignore_missing_imports = true
+
+# --------------------------------------------------------------------------- pytest
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+addopts = "-ra --strict-markers"
+markers = [
+    "integration: needs live Postgres/Redis/Qdrant (set RAG_RUN_INTEGRATION=1)",
+]

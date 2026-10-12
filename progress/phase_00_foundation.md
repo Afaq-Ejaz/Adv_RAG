@@ -1,6 +1,6 @@
 # Phase 0 — Foundation and Skeleton
 
-**Status:** ⬜ Not started
+**Status:** 🟨 In progress
 **Depends on:** —
 **Next:** [Phase 1 — Ingestion and Parsing](phase_01_ingestion_parsing.md)
 
@@ -17,34 +17,34 @@ A running, tested app shell with every boundary in place and no business logic y
 ## Tasks
 
 ### Tooling
-- [ ] Add dependencies via `uv` (FastAPI, uvicorn, pydantic-settings, SQLAlchemy 2, Alembic, psycopg/asyncpg, redis, dramatiq, qdrant-client, structlog)
-- [ ] Configure ruff, mypy, pytest (+ pytest-asyncio)
+- [x] Add dependencies via `uv` (FastAPI, uvicorn, pydantic-settings, SQLAlchemy 2, Alembic, psycopg/asyncpg, redis, dramatiq, qdrant-client, structlog)
+- [x] Configure ruff, mypy, pytest (+ pytest-asyncio)
 - [ ] Pre-commit hooks
 
 ### Core
-- [ ] `core/config.py` — pydantic-settings, `.env` + `.env.example`
-- [ ] `core/logging.py` — structlog, JSON logs, `request_id` middleware
-- [ ] `core/db.py` — SQLAlchemy engine/session factory
-- [ ] `core/context.py` — `RequestContext` (tenant_id, user_id, request_id), always resolves to the **default tenant** in this phase
-- [ ] `core/errors.py` — error types + FastAPI exception handlers
+- [x] `core/config.py` — pydantic-settings, `.env` (`.env.example` still missing)
+- [x] `core/logging.py` — structlog, JSON logs (`request_id` middleware not yet wired)
+- [x] `core/db.py` — SQLAlchemy engine/session factory
+- [x] `core/context.py` — `RequestContext` (tenant_id, user_id, request_id), resolves to default tenant
+- [x] `core/errors.py` — error types + FastAPI exception handlers
 
 ### Infrastructure
 - [ ] `docker-compose.yml` — Postgres 16, Redis, Qdrant
 - [ ] Alembic initialised
-- [ ] Base migration: `tenants`, `users` tables
+- [ ] Base migration: `tenants`, `users` tables (ORM models exist but no migration files)
 - [ ] Seed the **default tenant**
 
 ### Interfaces (ports) with stub adapters
-- [ ] `ObjectStorage`
-- [ ] `VectorStore`
-- [ ] `KeywordIndex`
-- [ ] `Embedder`
-- [ ] `LLMClient`
-- [ ] `DocumentParser`
+- [x] `ObjectStorage` — port defined + `InMemoryObjectStorage` fake
+- [x] `VectorStore` — port defined + `InMemoryVectorStore` fake
+- [x] `KeywordIndex` — port defined + `InMemoryKeywordIndex` fake
+- [x] `Embedder` — port defined + `HashEmbedder` fake
+- [x] `LLMClient` — port defined + `EchoLLM` fake
+- [x] `DocumentParser` — port defined + `PlainTextParser` fake
 
 ### API and workers
-- [ ] FastAPI app factory, `/v1` router
-- [ ] `GET /v1/health` — checks DB, Redis and Qdrant connectivity
+- [ ] FastAPI app factory, `/v1` router (CLI references `api.app:create_app` but the module doesn't exist yet)
+- [ ] `GET /v1/health` — checks DB, Redis and Qdrant connectivity (health check infrastructure exists in `infra/health.py` but no HTTP endpoint)
 - [ ] Dramatiq broker (Redis) + a `ping` actor
 
 ### CI

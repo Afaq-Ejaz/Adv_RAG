@@ -8,7 +8,7 @@ Status legend: ⬜ Not started · 🟨 In progress · ✅ Done · ⛔ Blocked
 
 | # | Phase | Status | Plan |
 |---|---|---|---|
-| 0 | Foundation and Skeleton | ⬜ | [phase_00_foundation.md](phase_00_foundation.md) |
+| 0 | Foundation and Skeleton | 🟨 | [phase_00_foundation.md](phase_00_foundation.md) |
 | 1 | Knowledge Plane I — Ingestion, Parsing, Chunking | ⬜ | [phase_01_ingestion_parsing.md](phase_01_ingestion_parsing.md) |
 | 2 | Knowledge Plane II — Embeddings and Indexing | ⬜ | [phase_02_embeddings_indexing.md](phase_02_embeddings_indexing.md) |
 | 3 | Query Plane I — Baseline RAG + Minimal Chat | ⬜ | [phase_03_baseline_rag.md](phase_03_baseline_rag.md) |
