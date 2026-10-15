@@ -13,6 +13,8 @@ from redis.asyncio import Redis
 from advance_rag.core.config import Settings
 from advance_rag.core.db import Database
 from advance_rag.infra.health import HealthCheck
+from advance_rag.infra.ports import ObjectStorage
+from advance_rag.infra.storage import create_storage
 
 
 @dataclass
@@ -21,6 +23,7 @@ class Resources:
     db: Database | None = None
     redis: Redis | None = None
     qdrant: AsyncQdrantClient | None = None
+    storage: ObjectStorage | None = None
 
     async def aclose(self) -> None:
         if self.db is not None:
@@ -38,6 +41,7 @@ def build_resources(settings: Settings) -> Resources:
         url=settings.qdrant_url,
         api_key=settings.qdrant_api_key.get_secret_value() if settings.qdrant_api_key else None,
     )
+    storage = create_storage(settings)
 
     async def ping_redis() -> None:
         await redis.ping()
@@ -54,4 +58,6 @@ def build_resources(settings: Settings) -> Resources:
         db=db,
         redis=redis,
         qdrant=qdrant,
+        storage=storage,
     )
+
