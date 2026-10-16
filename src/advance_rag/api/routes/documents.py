@@ -14,6 +14,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from advance_rag.api.deps import get_context, get_resources, get_session
 from advance_rag.core.context import RequestContext
 from advance_rag.documents import service as doc_service
+from advance_rag.documents.service import MAX_UPLOAD_BYTES
 from advance_rag.documents.schemas import (
     DocumentDetailResponse,
     DocumentListResponse,
@@ -21,6 +22,7 @@ from advance_rag.documents.schemas import (
     DocumentUploadResponse,
 )
 from advance_rag.infra.resources import Resources
+from advance_rag.workers.broker import process_document
 
 router = APIRouter(prefix="/documents", tags=["documents"])
 
@@ -45,6 +47,17 @@ async def upload_document(
     background Dramatiq worker.
     """
     data = await file.read()
+
+    # Reject oversized uploads before doing any further work
+    if len(data) > MAX_UPLOAD_BYTES:
+        return JSONResponse(
+            status_code=413,
+            content={
+                "detail": f"File too large ({len(data)} bytes). "
+                           f"Maximum allowed is {MAX_UPLOAD_BYTES} bytes.",
+            },
+        )
+
     mime_type = file.content_type or "application/octet-stream"
     filename = file.filename or "untitled"
     doc_title = title or filename
@@ -64,8 +77,6 @@ async def upload_document(
     )
 
     # Enqueue async processing via Dramatiq
-    from advance_rag.workers.broker import process_document
-
     process_document.send(str(doc.id))
 
     response = DocumentUploadResponse(

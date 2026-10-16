@@ -10,8 +10,14 @@ Coordinates:
 Phase 2 will extend this with an ``embed_and_index`` method without changing
 existing methods.
 """
+# Batch size for flushing chunks — keeps ORM identity-map pressure bounded.
+_CHUNK_FLUSH_BATCH = 500
+
+# Maximum upload size (100 MB).  Reject larger files early to avoid OOM.
+MAX_UPLOAD_BYTES = 100 * 1024 * 1024
 
 import hashlib
+import re
 import uuid
 from collections.abc import Sequence
 
@@ -170,20 +176,28 @@ async def parse_and_chunk(
         # Chunk
         chunk_results = chunk_document(parsed, config=chunker_config)
 
-        # Persist chunks
+        # Persist chunks in batches to avoid ORM identity-map bloat
+        batch: list[Chunk] = []
         for chunk_result in chunk_results:
-            chunk = Chunk(
-                tenant_id=doc.tenant_id,
-                document_version_id=version.id,
-                ordinal=chunk_result.ordinal,
-                text=chunk_result.text,
-                token_count=chunk_result.token_count,
-                page=chunk_result.page,
-                section=chunk_result.section,
-                heading_path=chunk_result.heading_path,
-                metadata_=chunk_result.metadata,
+            batch.append(
+                Chunk(
+                    tenant_id=doc.tenant_id,
+                    document_version_id=version.id,
+                    ordinal=chunk_result.ordinal,
+                    text=chunk_result.text,
+                    token_count=chunk_result.token_count,
+                    page=chunk_result.page,
+                    section=chunk_result.section,
+                    heading_path=chunk_result.heading_path,
+                    metadata_=chunk_result.metadata,
+                )
             )
-            session.add(chunk)
+            if len(batch) >= _CHUNK_FLUSH_BATCH:
+                session.add_all(batch)
+                await session.flush()
+                batch.clear()
+        if batch:
+            session.add_all(batch)
 
         await transition_status(session, doc, DocumentStatus.CHUNKED)
         await session.flush()
@@ -206,6 +220,10 @@ async def parse_and_chunk(
         raise
 
 
+# Pre-compiled regex for extracting the storage key from local file:// URIs.
+_LOCAL_KEY_RE = re.compile(r"([0-9a-f-]{36}/documents/.+)$")
+
+
 def _uri_to_key(uri: str) -> str:
     """Extract the storage key from a URI.
 
@@ -222,11 +240,8 @@ def _uri_to_key(uri: str) -> str:
         return parts[1] if len(parts) > 1 else ""
     if uri.startswith("file://"):
         # For local storage, the key is embedded in the path.
-        # We need to find the tenant_id prefix.
         path = uri[len("file://"):]
-        # Find the pattern: {tenant_id}/documents/...
-        import re
-        match = re.search(r"([0-9a-f-]{36}/documents/.+)$", path)
+        match = _LOCAL_KEY_RE.search(path)
         if match:
             return match.group(1)
     return uri

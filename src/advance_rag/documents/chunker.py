@@ -18,7 +18,6 @@ Phase 2 notes:
 """
 
 import re
-import uuid
 from collections.abc import Sequence
 from dataclasses import dataclass, field
 
@@ -26,7 +25,6 @@ from advance_rag.infra.ports import ParsedDocument, ParsedSection
 
 # Simple sentence boundary regex.  Not perfect, but good enough for chunking.
 _SENTENCE_RE = re.compile(r"(?<=[.!?])\s+(?=[A-Z])")
-_HEADING_RE = re.compile(r"^(#{1,6})\s+(.+)$", re.MULTILINE)
 
 
 @dataclass(frozen=True, slots=True)

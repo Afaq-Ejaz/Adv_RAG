@@ -25,6 +25,18 @@ _result_backend = RedisBackend(url=_settings.redis_url)
 _redis_broker.add_middleware(Results(backend=_result_backend))
 dramatiq.set_broker(_redis_broker)
 
+# Lazy singleton: reuse one Database (engine + pool) across all jobs in this
+# worker process instead of creating/disposing per job.
+_db = None
+
+
+def _get_db():
+    global _db
+    if _db is None:
+        from advance_rag.core.db import Database
+        _db = Database(_settings.database_url)
+    return _db
+
 
 @dramatiq.actor
 def ping() -> str:
@@ -47,29 +59,25 @@ def process_document(document_id: str) -> None:
 
         settings = get_settings()
         storage = create_storage(settings)
+        db = _get_db()
 
-        from advance_rag.core.db import Database
-
-        db = Database(settings.database_url)
-        try:
-            async with db.session_factory() as session:
-                try:
-                    chunks = await doc_service.parse_and_chunk(
-                        session,
-                        document_id=uuid.UUID(document_id),
-                        storage=storage,
-                    )
-                    await session.commit()
-                    log.info(
-                        "process_document_completed",
-                        document_id=document_id,
-                        chunk_count=len(chunks),
-                    )
-                except Exception:
-                    await session.rollback()
-                    raise
-        finally:
-            await db.dispose()
+        async with db.session_factory() as session:
+            try:
+                chunks = await doc_service.parse_and_chunk(
+                    session,
+                    document_id=uuid.UUID(document_id),
+                    storage=storage,
+                )
+                await session.commit()
+                log.info(
+                    "process_document_completed",
+                    document_id=document_id,
+                    chunk_count=len(chunks),
+                )
+            except Exception:
+                await session.rollback()
+                raise
 
     asyncio.run(_run())
+
 
