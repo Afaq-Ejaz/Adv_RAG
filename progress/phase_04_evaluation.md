@@ -1,7 +1,7 @@
 # Phase 4 — Evaluation Harness
 
 **Status:** ⬜ Not started
-**Depends on:** [Phase 3](phase_03_baseline_rag.md)
+**Depends on:** [Phase 3B](phase_03b_lightweight_eval.md)
 **Next:** [Phase 5](phase_05_auth_tenancy_permissions.md)
 
 ## Goal

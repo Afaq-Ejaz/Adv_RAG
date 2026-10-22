@@ -1,7 +1,7 @@
 # Phase 6 — Advanced Retrieval and Grounding
 
 **Status:** ⬜ Not started
-**Depends on:** [Phase 5](phase_05_auth_tenancy_permissions.md)
+**Depends on:** [Phase 4](phase_04_evaluation.md) (runs in parallel with [Phase 5](phase_05_auth_tenancy_permissions.md))
 **Next:** [Phase 7](phase_07_versioning_lifecycle.md)
 
 ## Goal

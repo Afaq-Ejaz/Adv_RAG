@@ -2,7 +2,7 @@
 
 **Status:** ⬜ Not started
 **Depends on:** [Phase 4](phase_04_evaluation.md)
-**Next:** [Phase 6](phase_06_advanced_retrieval.md)
+**Next:** [Phase 7](phase_07_versioning_lifecycle.md) (runs in parallel with [Phase 6](phase_06_advanced_retrieval.md))
 
 ## Goal
 
@@ -27,6 +27,11 @@ Real users, real tenants, isolated data, document-level permissions during retri
 
 ### Permission filter
 - [ ] Fill the PermissionFilter stage (push ACL into Qdrant + SQL filters)
+
+### Tenant configuration system
+- [ ] `tenant_config` table (tenant_id, feature_key, value, updated_at)
+- [ ] API: `GET/PUT /v1/admin/tenants/{id}/config`
+- [ ] Pipeline reads tenant config at runtime (feature flags for retrieval strategies)
 
 ### Admin endpoints
 - [ ] Create tenant, manage users/groups/API keys, update document ACL

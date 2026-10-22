@@ -1,20 +1,19 @@
 # Phase 7 — Versioning and Document Lifecycle
 
 **Status:** ⬜ Not started
-**Depends on:** [Phase 6](phase_06_advanced_retrieval.md)
+**Depends on:** [Phase 5](phase_05_auth_tenancy_permissions.md) + [Phase 6](phase_06_advanced_retrieval.md) (both must complete)
 **Next:** [Phase 8](phase_08_observability_cost.md)
 
 ## Goal
 
-Update and delete documents safely with no query downtime.
+Zero-downtime document updates and safe deletion with index consistency. (Basic soft delete and re-upload were added in Phase 1; this phase handles the hard concurrent-indexing problem.)
 
 ## Tasks
 
-### Document versions
-- [ ] Re-upload creates a new version
-- [ ] Index new version before retiring old (no gap)
-- [ ] Retrieval returns only active version
-- [ ] `GET /v1/documents/{id}/versions`
+### Zero-downtime re-indexing
+- [ ] Re-upload triggers: parse → chunk → embed → index new version
+- [ ] New version indexed *before* old version is retired (no search gap)
+- [ ] Retrieval returns only the active version during the transition
 
 ### Deletion
 - [ ] Soft delete (hidden from retrieval immediately)

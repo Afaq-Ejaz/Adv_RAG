@@ -9,31 +9,36 @@ Status legend: ⬜ Not started · 🟨 In progress · ✅ Done · ⛔ Blocked
 | # | Phase | Status | Plan |
 |---|---|---|---|
 | 0 | Foundation and Skeleton | 🟨 | [phase_00_foundation.md](phase_00_foundation.md) |
-| 1 | Knowledge Plane I — Ingestion, Parsing, Chunking | ✅ | [phase_01_ingestion_parsing.md](phase_01_ingestion_parsing.md) |
+| 1 | Knowledge Plane I — Ingestion, Parsing, Chunking + Basic Versioning | ✅ | [phase_01_ingestion_parsing.md](phase_01_ingestion_parsing.md) |
 | 2 | Knowledge Plane II — Embeddings and Indexing | ⬜ | [phase_02_embeddings_indexing.md](phase_02_embeddings_indexing.md) |
-| 3 | Query Plane I — Baseline RAG + Minimal Chat | ⬜ | [phase_03_baseline_rag.md](phase_03_baseline_rag.md) |
-| 4 | Evaluation Harness | ⬜ | [phase_04_evaluation.md](phase_04_evaluation.md) |
+| 3 | Query Plane I — Baseline RAG + Conversations + Minimal UI | ⬜ | [phase_03_baseline_rag.md](phase_03_baseline_rag.md) |
+| 3B | Lightweight Evaluation | ⬜ | [phase_03b_lightweight_eval.md](phase_03b_lightweight_eval.md) |
+| 4 | Full Evaluation Harness | ⬜ | [phase_04_evaluation.md](phase_04_evaluation.md) |
 | 5 | Auth, Multi-Tenancy, Permission Filter | ⬜ | [phase_05_auth_tenancy_permissions.md](phase_05_auth_tenancy_permissions.md) |
 | 6 | Query Plane II — Advanced Retrieval and Grounding | ⬜ | [phase_06_advanced_retrieval.md](phase_06_advanced_retrieval.md) |
-| 7 | Versioning and Document Lifecycle | ⬜ | [phase_07_versioning_lifecycle.md](phase_07_versioning_lifecycle.md) |
+| 7 | Versioning — Zero-Downtime Re-indexing | ⬜ | [phase_07_versioning_lifecycle.md](phase_07_versioning_lifecycle.md) |
 | 8 | Observability and Cost Tracking | ⬜ | [phase_08_observability_cost.md](phase_08_observability_cost.md) |
 | 9 | Security Hardening | ⬜ | [phase_09_security.md](phase_09_security.md) |
 | 10 | Streamlit Product UI | ⬜ | [phase_10_streamlit_ui.md](phase_10_streamlit_ui.md) |
 | 11 | GCP Production Deployment and Scale | ⬜ | [phase_11_gcp_production.md](phase_11_gcp_production.md) |
 
+> **P5 and P6 run in parallel** — advanced retrieval has no dependency on auth. Both must complete before P7.
+
 ```mermaid
 flowchart LR
-  P0["P0 Foundation"] --> P1["P1 Ingestion and Parsing"]
-  P1 --> P2["P2 Embeddings and Indexing"]
-  P2 --> P3["P3 Baseline RAG + Chat UI"]
-  P3 --> P4["P4 Evaluation Harness"]
+  P0["P0 Foundation"] --> P1["P1 Ingestion + Versioning"]
+  P1 --> P2["P2 Embeddings + Indexing"]
+  P2 --> P3["P3 Baseline RAG + Chat + UI Shell"]
+  P3 --> P3B["P3B Lightweight Eval"]
+  P3B --> P4["P4 Full Eval Harness"]
   P4 --> P5["P5 Auth, Tenancy, Permissions"]
-  P5 --> P6["P6 Advanced Retrieval and Grounding"]
-  P6 --> P7["P7 Versioning and Lifecycle"]
-  P7 --> P8["P8 Observability and Cost"]
+  P4 --> P6["P6 Advanced Retrieval"]
+  P5 --> P7["P7 Zero-Downtime Versioning"]
+  P6 --> P7
+  P7 --> P8["P8 Observability + Cost"]
   P8 --> P9["P9 Security Hardening"]
   P9 --> P10["P10 Streamlit Product UI"]
-  P10 --> P11["P11 GCP Production and Scale"]
+  P10 --> P11["P11 GCP Production"]
 ```
 
 ---

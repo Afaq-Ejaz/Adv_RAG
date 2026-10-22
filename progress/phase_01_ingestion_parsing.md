@@ -31,12 +31,19 @@ Upload PDF/DOCX → store originals → produce structured chunks with metadata.
 - [x] Structure-aware recursive chunker (heading → paragraph → sentence)
 - [x] Token-based size/overlap, page/section metadata kept
 
+### Basic versioning (moved from Phase 7)
+- [ ] Re-upload same document → creates new `document_version` row
+- [ ] `DELETE /v1/documents/{id}` → soft delete (sets `deleted_at`, hidden from queries)
+- [ ] Async purge job for soft-deleted documents (storage cleanup)
+
 ### Read endpoints
 - [x] `GET /v1/documents` (paginated) + `GET /v1/documents/{id}`
 
 ### Tests
 - [x] Parser + chunker unit tests
 - [x] Integration test: upload → CHUNKED
+- [ ] Re-upload creates new version, old version still accessible
+- [ ] Soft-deleted documents excluded from listings
 
 ## Exit Criteria
 
